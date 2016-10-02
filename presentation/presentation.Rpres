@@ -1,0 +1,67 @@
+Application to Visuarize Time Series Data
+========================================================
+author: Masahito Tsukano
+date: 9/25/2016
+
+Background
+========================================================
+In visualizing time series data,
+several operations should be done to original data such as:
+- **Trimming**: cut certain period out of entire data
+- **Selecting**: pick up variable to show
+- **Computing trend**: compute trend to roughly understand how the data changes over the time.
+
+However, it is inefficient to write plot command every time
+when those operations are added...
+
+Functions
+========================================================
+The application interactively visualize time series data as an user designates.
+
+![alt text](app.png)
+***
+- **Select Variable**: select variable to show.
+- **Designate from/to**:designate starting and ending dates to display
+- **Compute trend**: apply moving average to plotted data
+- **Set window size**: change window size of moving average.
+
+
+About Data Set
+========================================================
+As an example of time series data, following data set is used in this application:
+- **Data Set**: airquality
+- **Description**: Daily air quality measurements in New York, May to September 1973.
+- **Variables**: Ozone, Solar Radiation, Wind, Temperature
+
+Example
+========================================================
+The graph shown below is displayed when:
+
+- Variable = Temperature
+- From/To = 5/1/1973 - 9/30
+- Window Size = 8
+
+```{r,fig.width=10, fig.height=6,echo=FALSE}
+# Create date column (from 1973-05-01 to 1973-09-30)
+origin <- as.Date("1973-05-01")
+air_data       <- airquality
+air_data$date  <- 0:(length(airquality$Day)-1) + origin
+
+plot(air_data$date, air_data$Temp,
+     xlab = "Date",
+     ylab = "Temperature (degrees F)",
+     type = "l")
+
+trend <- filter(air_data$Temp, rep(1, 8)/8)
+trend <- data.frame(x=air_data$date, y=trend)
+trend <- trend[!is.na(trend$y),]
+
+lines(trend$x, trend$y, col="blue",lwd=2)
+
+legend("topleft",
+       legend=c("Temperature","Trend"),
+       col=c("black", "blue"),
+       lty=c(1,1), lwd=c(1,2),
+       bg="transparent")
+```
+
